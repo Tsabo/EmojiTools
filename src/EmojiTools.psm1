@@ -56,10 +56,14 @@ if (Test-Path $Script:EmojiDataPath) {
         $Script:EmojiData = Import-Csv $Script:EmojiDataPath -Encoding UTF8
         Write-Verbose "Loaded $($Script:EmojiData.Count) emojis from dataset"
 
-        # Check dataset age and suggest update if needed
+        # Check dataset age and suggest update if needed (only once per session)
         $datasetAge = (Get-Date) - (Get-Item $Script:EmojiDataPath).LastWriteTime
         if ($Script:EmojiToolsConfig.AutoUpdateCheck -and $datasetAge.TotalDays -gt $Script:EmojiToolsConfig.UpdateInterval) {
-            Write-Warning "ℹ️  Your emoji dataset is $([math]::Round($datasetAge.TotalDays)) days old. Run 'Update-EmojiDataset' to get the latest emojis from Unicode CLDR."
+            # Use global variable to track if we've already warned in this session
+            if (-not $Global:EmojiToolsUpdateWarningShown) {
+                Write-Information "ℹ️  Your emoji dataset is $([math]::Round($datasetAge.TotalDays)) days old. Run 'Update-EmojiDataset' to get the latest emojis." -InformationAction Continue
+                $Global:EmojiToolsUpdateWarningShown = $true
+            }
         }
     }
     catch {
