@@ -34,7 +34,7 @@ $Script:UserDataPath = Initialize-EmojiToolsDataDirectory
 
 # Configuration (Script-scoped - accessible to all functions in the module)
 $Script:EmojiToolsConfig = @{
-    AutoUpdateCheck = $true  # Set to $false to disable auto-update checks
+    AutoUpdateCheck = $false  # Set to $true to enable auto-update notifications
     UpdateInterval = 7       # Days between update checks
     # AutoInitialize features: 'Collections', 'Aliases', 'All', or empty array to disable
     # Remove items from array to skip specific features
@@ -56,13 +56,24 @@ if (Test-Path $Script:EmojiDataPath) {
         $Script:EmojiData = Import-Csv $Script:EmojiDataPath -Encoding UTF8
         Write-Verbose "Loaded $($Script:EmojiData.Count) emojis from dataset"
 
-        # Check dataset age and suggest update if needed (only once per session)
+        # Check dataset age and suggest update if needed (once per day across all sessions)
         $datasetAge = (Get-Date) - (Get-Item $Script:EmojiDataPath).LastWriteTime
         if ($Script:EmojiToolsConfig.AutoUpdateCheck -and $datasetAge.TotalDays -gt $Script:EmojiToolsConfig.UpdateInterval) {
-            # Use global variable to track if we've already warned in this session
-            if (-not $Global:EmojiToolsUpdateWarningShown) {
-                Write-Information "ℹ️  Your emoji dataset is $([math]::Round($datasetAge.TotalDays)) days old. Run 'Update-EmojiDataset' to get the latest emojis." -InformationAction Continue
-                $Global:EmojiToolsUpdateWarningShown = $true
+            # Use a file timestamp to track when we last warned (persists across sessions)
+            $warningFlagPath = Join-Path $Script:UserDataPath ".last-update-warning"
+            $shouldWarn = $true
+
+            if (Test-Path $warningFlagPath) {
+                $lastWarning = (Get-Item $warningFlagPath).LastWriteTime
+                $hoursSinceWarning = ((Get-Date) - $lastWarning).TotalHours
+                # Only warn once per 24 hours
+                $shouldWarn = $hoursSinceWarning -gt 24
+            }
+
+            if ($shouldWarn) {
+                Write-Host "ℹ️  Your emoji dataset is $([math]::Round($datasetAge.TotalDays)) days old. Run 'Update-EmojiDataset' to get the latest emojis." -ForegroundColor Yellow
+                # Touch the flag file to record this warning
+                $null = New-Item -Path $warningFlagPath -ItemType File -Force
             }
         }
     }

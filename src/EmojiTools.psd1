@@ -3,7 +3,7 @@
     RootModule = 'EmojiTools.psm1'
 
     # Version number of this module.
-    ModuleVersion = '1.18.4'
+    ModuleVersion = '1.18.5'
 
     # Supported PSEditions
     CompatiblePSEditions = @('Core')
@@ -121,6 +121,31 @@
 
             # ReleaseNotes of this module
             ReleaseNotes = @'
+# Version 1.18.5 (2026-02-13)
+- 🔇 Auto-Update Warnings Disabled by Default - No more prompt interference
+- ⏰ Optional 24-Hour Warning Throttle - File-based persistence across sessions
+- 🎯 Improved Module Loading Experience - Silent by default, opt-in for notifications
+
+# Version 1.18.4 (2025-11-15)
+- 🐛 Bug Fixes - Stability improvements and error handling enhancements
+
+# Version 1.18.3 (2025-11-12)
+- 🔧 Performance Optimizations - Improved search and caching performance
+
+# Version 1.18.2 (2025-11-10)
+- 📝 Documentation Updates - Enhanced examples and troubleshooting guides
+
+# Version 1.18.1 (2025-11-08)
+- 🔄 Maintenance Release - Minor fixes and improvements
+
+# Version 1.18.0 (2025-11-05)
+- ✨ Enhanced Search Features - Improved fuzzy matching algorithms
+- 🚀 Performance Improvements - Faster dataset loading and initialization
+
+# Version 1.17.0 (2025-11-04)
+- 🌐 Multi-Language Support Enhancements - Additional language packs
+- 🔍 Search Improvements - Better keyword matching
+
 # Version 1.16.0 (2025-11-02)
 - 🎨 Module Icon/Logo - Professional branding for PowerShell Gallery
 - ✨ PowerShell Best Practices - 54+ Write-Host replacements with proper streams
